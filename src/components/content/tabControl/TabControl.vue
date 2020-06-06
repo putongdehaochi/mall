@@ -42,7 +42,6 @@
 
   .tab-control-item {
     flex: 1;
-
   }
 
   .active {

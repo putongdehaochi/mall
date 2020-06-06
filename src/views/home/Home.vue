@@ -3,12 +3,16 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
+    <tab-control :titles="['流行','新款','精选']" ref="tabControl1" @tabClick="tabClick" class="tab-control"
+      v-show="isTabFixed">
+    </tab-control>
     <scroll class="content" ref="scroll" :probe-type="3" :pull-up-load="true" @scroll="contentScroll"
       @pullingUp="loadMore">
-      <home-swiper :banners="banners"></home-swiper>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
       <home-recommend-view :recommends="recommends"></home-recommend-view>
       <home-feature-view></home-feature-view>
-      <tab-control :titles="['流行','新款','精选']" class="tab-control" @tabClick="tabClick"></tab-control>
+      <tab-control :titles="['流行','新款','精选']" ref="tabControl2" @tabClick="tabClick">
+      </tab-control>
       <goods-list :goods="showGoods"></goods-list>
     </scroll>
     <back-top @click.native="backTop" v-show="isShowBackTop" />
@@ -20,6 +24,9 @@
   import NavBar from "components/common/navbar/NavBar"
   import Scroll from "components/common/scroll/Scroll"
 
+  import {
+    debounce
+  } from "common/utils"
 
   import TabControl from "components/content/tabControl/TabControl"
   import GoodsList from "components/content/goods/GoodsList"
@@ -71,7 +78,9 @@
           },
         },
         currentType: "pop",
-        isShowBackTop: false
+        isShowBackTop: false,
+        tabOffsetTop: 609,
+        isTabFixed: false,
       }
     },
     created() {
@@ -79,6 +88,13 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+    },
+    mounted() {
+      const refresh = debounce(this.$refs.scroll.goodsRefresh, 200)
+      this.$bus.$on('itemImageLoad', () => {
+        refresh()
+      })
+
     },
     methods: {
       // 事件
@@ -96,16 +112,26 @@
           default:
             break;
         }
+        this.$refs.tabControl1.currentIndex = index
+        this.$refs.tabControl2.currentIndex = index
       },
       backTop() {
         this.$refs.scroll.scrollTo(0, 0, 500)
       },
       contentScroll(pos) {
+        // backtop
         -pos.y > 1000 ? this.isShowBackTop = true : this.isShowBackTop = false
+          // tabcontroll
+          -
+          pos.y > this.tabOffsetTop ? this.isTabFixed = true : this.isTabFixed = false
       },
       loadMore() {
         this.getHomeGoods(this.currentType)
         this.$refs.scroll.finishPullUp()
+      },
+      swiperImageLoad() {
+        this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;
+        console.log(this.$refs.tabControl.$el.offsetTop);
       },
       // 网络请求
       getHomeMultidata() {
@@ -129,26 +155,23 @@
 <style scoped>
   #home {
     height: 100vh;
+    position: relative
   }
 
   .home-nav {
     background-color: var(--color-tint);
     color: #fff;
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    z-index: 9;
-  }
 
-  .tab-control {
-    position: sticky;
-    top: 44px;
-    z-index: 9;
   }
 
   .content {
     height: calc(100% - 93px);
-    margin-top: 44px;
+    overflow: hidden;
+  }
+
+
+  .tab-control {
+    position: relative;
+    z-index: 9;
   }
 </style>

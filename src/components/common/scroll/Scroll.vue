@@ -33,21 +33,28 @@
         probeType: this.probeType,
         pullUpLoad: this.pullUpLoad,
       })
-      // 2.将监听事件回调
-      this.scroll.on('scroll', pos => {
-        this.$emit('scroll', pos)
-      })
+      // 2.监听滚动位置
+      if (this.probeType === 2 || this.probeType === 3) {
+        this.scroll.on('scroll', pos => {
+          this.$emit('scroll', pos)
+        })
+      }
 
-      this.scroll.on('pullingUp', () => {
-        this.$emit('pullingUp')
-      })
+      if (this.pullUpLoad) {
+        this.scroll.on('pullingUp', () => {
+          this.$emit('pullingUp')
+        })
+      }
     },
     methods: {
       scrollTo(x, y, time) {
-        this.scroll.scrollTo(x, y, time)
+        this.scroll && this.scroll.scrollTo(x, y, time)
       },
       finishPullUp() {
-        this.scroll.finishPullUp()
+        this.scroll && this.scroll.finishPullUp()
+      },
+      goodsRefresh() {
+        this.scroll && this.scroll.refresh();
       }
     },
   }
