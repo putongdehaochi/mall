@@ -81,6 +81,7 @@
         isShowBackTop: false,
         tabOffsetTop: 609,
         isTabFixed: false,
+        saveY: 0,
       }
     },
     created() {
@@ -94,7 +95,14 @@
       this.$bus.$on('itemImageLoad', () => {
         refresh()
       })
-
+    },
+    activated() {
+      this.$refs.scroll.scrollTo(0, this.saveY, 0)
+      this.$refs.scroll.goodsRefresh()
+    },
+    deactivated() {
+      this.saveY = this.$refs.scroll.scroll.y
+      console.log(this.saveY);
     },
     methods: {
       // 事件
@@ -121,17 +129,16 @@
       contentScroll(pos) {
         // backtop
         -pos.y > 1000 ? this.isShowBackTop = true : this.isShowBackTop = false
-          // tabcontroll
-          -
-          pos.y > this.tabOffsetTop ? this.isTabFixed = true : this.isTabFixed = false
+        // tabcontroll
+        this.isTabFixed = pos.y < -this.tabOffsetTop
       },
       loadMore() {
         this.getHomeGoods(this.currentType)
         this.$refs.scroll.finishPullUp()
       },
       swiperImageLoad() {
-        this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;
-        console.log(this.$refs.tabControl.$el.offsetTop);
+        this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
+        console.log(this.$refs.tabControl2.$el.offsetTop);
       },
       // 网络请求
       getHomeMultidata() {
@@ -155,23 +162,30 @@
 <style scoped>
   #home {
     height: 100vh;
-    position: relative
+    position: relative,
+
   }
 
   .home-nav {
     background-color: var(--color-tint);
     color: #fff;
-
   }
 
   .content {
-    height: calc(100% - 93px);
+    /* height: calc(100% - 93px);
     overflow: hidden;
+    position: absolute; */
+    overflow: hidden;
+    position: absolute;
+    top: 44px;
+    bottom: 49px;
+    left: 0;
+    right: 0;
   }
 
 
   .tab-control {
     position: relative;
-    z-index: 9;
+    z-index: 1;
   }
 </style>
