@@ -8,38 +8,7 @@
       <detail-goods-info :detailInfo="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
       <detail-param-info :paramInfo="paramInfo"></detail-param-info>
       <detail-comment-info :commentInfo="commentInfo"></detail-comment-info>
-      <ul>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-        <li>1</li>
-      </ul>
+      <goods-list :goods="recommends"></goods-list>
     </scroll>
   </div>
 </template>
@@ -47,6 +16,9 @@
 <script>
   import Swiper from "components/common/swiper/Swiper"
   import Scroll from "components/common/scroll/Scroll"
+  import {
+    debounce
+  } from 'common/utils'
 
   import DetailSwiper from "./childComps/DetailSwiper"
   import DetailNavBar from "./childComps/DetailNavBar"
@@ -56,11 +28,15 @@
   import DetailParamInfo from "./childComps/DetailParamInfo"
   import DetailCommentInfo from "./childComps/DetailCommentInfo"
 
+  import GoodsList from "components/content/goods/GoodsList"
+
+
   import {
     getGoods,
     Goods,
     GoodsParam,
     Shop,
+    getRecommend,
   } from "network/detail"
 
   export default {
@@ -75,6 +51,7 @@
       DetailGoodsInfo,
       DetailParamInfo,
       DetailCommentInfo,
+      GoodsList,
     },
     data() {
       return {
@@ -85,16 +62,23 @@
         shop: {},
         detailInfo: {},
         data: {},
-        commentInfo: {}
+        commentInfo: {},
+        recommends: [],
       }
     },
     created() {
       this.iid = this.$route.params.iid
       this.getGoods(this.iid)
+      this.getRecommend()
     },
     methods: {
       imageLoad() {
         this.$refs.scroll.refresh()
+      },
+      getRecommend() {
+        getRecommend().then(res => {
+          this.recommends = res.data.list
+        })
       },
       getGoods(iid) {
         getGoods(iid).then(res => {
@@ -102,7 +86,6 @@
           this.data = res.result
           this.banners = data.itemInfo.topImages
           this.goods = new Goods(data.itemInfo, data.columns, data.shopInfo.services);
-          // this.goodsParam = new GoodsParam(data.itemInfo, data.columns, data.shopInfo.services);
           this.shop = new Shop(data.shopInfo);
           this.detailInfo = data.detailInfo
           this.paramInfo = new GoodsParam(data.itemParams.info, data.itemParams.rule)
@@ -111,6 +94,11 @@
           }
         })
       }
+    },
+    mounted() {
+      this.$bus.$on('detailItemImageLoad', () => {
+        debounce(this.$refs.scroll.refresh, 100)
+      })
     },
   }
 </script>

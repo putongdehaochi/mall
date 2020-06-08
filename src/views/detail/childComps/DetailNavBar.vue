@@ -1,8 +1,7 @@
 <template>
   <div class="detail-nav-bar">
     <nav-bar>
-      <div slot="left" @click="backClick">
-        <img src="../../../assets/img/common/back.svg" alt="" class="back">
+      <div slot="left" @click="backClick" class="arrow-left">
       </div>
       <div slot="center" class="title">
         <div class="title-item" v-for="(item, index) in titles" :key="index" :class="{active: currentIndex === index}"

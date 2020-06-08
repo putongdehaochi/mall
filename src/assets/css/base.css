@@ -58,6 +58,17 @@ a {
     margin-left: .1rem;
 }
 
+.arrow-left {
+    border-bottom: 1px solid #999;
+    border-right: 1px solid #999;
+    width: 9px;
+    height: 9px;
+    background-color: transparent;
+    transform: rotate(135deg);
+    display: inline-block;
+    margin-left: .1rem;
+}
+
 .left {
     float: left;
 }
