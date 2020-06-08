@@ -91,14 +91,14 @@
       this.getHomeGoods('sell')
     },
     mounted() {
-      const refresh = debounce(this.$refs.scroll.goodsRefresh, 200)
+      const refresh = debounce(this.$refs.scroll.refresh, 200)
       this.$bus.$on('itemImageLoad', () => {
         refresh()
       })
     },
-    activated() {
+    activated() {      
+      this.$refs.scroll.refresh()
       this.$refs.scroll.scrollTo(0, this.saveY, 0)
-      this.$refs.scroll.goodsRefresh()
     },
     deactivated() {
       this.saveY = this.$refs.scroll.scroll.y

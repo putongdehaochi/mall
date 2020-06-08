@@ -17,3 +17,11 @@ export function getHomeGoods(type, page) {
         }
     })
 }
+export function getGoodsDetail(id) {
+    return request({
+        url: "/home/data",
+        params: {
+            id
+        }
+    })
+}

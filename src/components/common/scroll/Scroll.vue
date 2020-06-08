@@ -53,7 +53,7 @@
       finishPullUp() {
         this.scroll && this.scroll.finishPullUp()
       },
-      goodsRefresh() {
+      refresh() {
         this.scroll && this.scroll.refresh();
       }
     },
