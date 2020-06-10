@@ -53,7 +53,8 @@
       finishPullUp() {
         this.scroll && this.scroll.finishPullUp()
       },
-      refresh() {
+      refresh() {        
+        console.log("refresh");
         this.scroll && this.scroll.refresh();
       }
     },

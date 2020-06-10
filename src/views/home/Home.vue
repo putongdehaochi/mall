@@ -82,6 +82,7 @@
         tabOffsetTop: 609,
         isTabFixed: false,
         saveY: 0,
+        itemImageLoadRefresh: null
       }
     },
     created() {
@@ -91,13 +92,16 @@
       this.getHomeGoods('sell')
     },
     mounted() {
-      const refresh = debounce(this.$refs.scroll.refresh, 200)
+      console.log("homeItemImageLoad");
+      this.itemImageLoadRefresh = debounce(this.$refs.scroll.refresh, 200)
       this.$bus.$on('itemImageLoad', () => {
-        refresh()
+        this.itemImageLoadRefresh()
       })
     },
-    activated() {      
+    activated() {
       this.$refs.scroll.refresh()
+      console.log("1111111111" + this.saveY);
+      
       this.$refs.scroll.scrollTo(0, this.saveY, 0)
     },
     deactivated() {
@@ -138,7 +142,6 @@
       },
       swiperImageLoad() {
         this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
-        console.log(this.$refs.tabControl2.$el.offsetTop);
       },
       // 网络请求
       getHomeMultidata() {

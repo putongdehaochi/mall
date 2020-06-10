@@ -20,6 +20,15 @@ export function getRecommend() {
 }
 
 
+export function getRecommendById(item_id) {
+    return request({
+        url: "/recommend",
+        params: {
+            item_id
+        }
+    })
+}
+
 export class Goods {
     constructor(itemInfo, columns, services) {
         this.title = itemInfo.title;

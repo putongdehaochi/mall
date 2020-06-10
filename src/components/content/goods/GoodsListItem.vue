@@ -18,6 +18,11 @@
         default () {
           return {}
         }
+      },
+    },
+    data() {
+      return {
+        iid: ''
       }
     },
     computed: {
@@ -27,19 +32,19 @@
     },
     methods: {
       imageLoad() {
-        if (this.$route.path.indexOf('/home')) {
+        if (this.$route.path.indexOf('/home') !== -1) {          
           this.$bus.$emit('itemImageLoad');
-        } else if (this.$route.path.indexOf('/detail')) {
+        } else if (this.$route.path.indexOf('/detail') !== -1) {                  
           this.$bus.$emit('detailItemImageLoad');
         }
       },
       goodsClick() {
         if (this.$route.path.indexOf('detail') !== -1) {
-          console.log(111);
-          this.$router.replace('/detail/' + this.goodsItem.iid)
+          // this.iid = this.goodsItem.item_id
+          // this.$router.replace('/detail/' + this.iid).catch(() => {})
         } else {
-          console.log(22);
-          this.$router.push('/detail/' + this.goodsItem.iid)
+          this.iid = this.goodsItem.iid
+          this.$router.push('/detail/' + this.iid).catch(() => {})
         }
       }
     },
