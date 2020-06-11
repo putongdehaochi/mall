@@ -1,6 +1,6 @@
 <template>
   <div id="detail" class="wrapper">
-    <detail-nav-bar class="detail-nav-bar" @itemClick="itemClick"></detail-nav-bar>
+    <detail-nav-bar class="detail-nav-bar" @itemClick="itemClick" ref="detailNav"></detail-nav-bar>
     <scroll class="content" ref="scroll" :probe-type="3" @scroll="scrollPosListener">
       <detail-swiper :banners="banners"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
@@ -71,7 +71,8 @@
         isShowBackTop: false,
         itemRefresh: null,
         navValueY: [],
-        getNavValueY: null
+        getNavValueY: null,
+        currentIndex: 0
       }
     },
     created() {
@@ -84,9 +85,8 @@
         this.navValueY.push(this.$refs.params.$el.offsetTop)
         this.navValueY.push(this.$refs.comments.$el.offsetTop)
         this.navValueY.push(this.$refs.recommends.$el.offsetTop)
-        console.log(this.navValueY);
-
-      })
+        this.navValueY.push(Number.MAX_VALUE)
+      }, 200)
     },
     methods: {
       itemClick(index) {
@@ -94,6 +94,7 @@
       },
       imageLoad() {
         console.log("detailImageLoad");
+        console.log(this.navValueY);
         this.$refs.scroll.refresh()
         this.getNavValueY()
       },
@@ -120,12 +121,18 @@
         this.$refs.scroll.scrollTo(0, 0, 500)
       },
       scrollPosListener(pos) {
-        -pos.y > 1000 ? this.isShowBackTop = true : this.isShowBackTop = false
+        const currentPosY = -pos.y
+        currentPosY > 1000 ? this.isShowBackTop = true : this.isShowBackTop = false
+        for (let i = 0; i < this.navValueY.length - 1; i++) {
+          if (this.currentIndex !== i && (currentPosY >= this.navValueY[i] && currentPosY < this.navValueY[i + 1])) {
+            this.$refs.detailNav.currentIndex = i
+            this.currentIndex = i
+          }
+        }
       }
     },
     mounted() {
       console.log("detailItemImageLoad");
-      
       this.itemRefresh = debounce(this.$refs.scroll.refresh, 100)
       this.$bus.$on('detailItemImageLoad', () => {
         this.itemRefresh()
